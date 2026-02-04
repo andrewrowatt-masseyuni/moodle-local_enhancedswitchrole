@@ -31,7 +31,12 @@ class page_redirect {
      * @param \core\hook\after_config $hook
      */
     public static function after_config(\core\hook\after_config $hook): void {
-        global $ME;
+        global $ME, $CFG;
+
+        if (during_initial_install() || isset($CFG->upgraderunning)) {
+            // Do nothing during installation or upgrade.
+            return;
+        }
 
         // Check if we're on the core switchrole.php page.
         if (isset($ME) && str_starts_with($ME, '/course/switchrole.php')) {

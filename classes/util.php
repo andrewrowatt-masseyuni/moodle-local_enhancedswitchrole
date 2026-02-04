@@ -81,18 +81,22 @@ class util {
     }
 
     public static function render_role_with_group_dropdown($rolebutton, $courseid, $role, $roleid, $returnurl):void {
+        global $OUTPUT;
+        
         // Get course groups.
         $coursegroups = util::get_course_groups($courseid);
 
         $dropdownid = 'groupDropdown' . clean_param($roleid, PARAM_INT);
-        echo '<div class="mx-3 mb-1" style="display: flex; gap: 0.25em;">';
-        echo $rolebutton;
-        echo '<div>';
-        echo '<div class="dropdown">';
-        echo '<button class="btn btn-secondary dropdown-toggle" type="button" id="' . s($dropdownid) . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
-        echo get_string('studentingroup', 'local_enhancedswitchrole', $role);
-        echo '</button>';
-        echo '<div class="dropdown-menu" aria-labelledby="' . s($dropdownid) . '">';
+        
+        // Prepare data for template.
+        $data = [
+            'rolebutton' => $rolebutton,
+            'dropdownid' => $dropdownid,
+            'dropdownlabel' => get_string('studentingroup', 'local_enhancedswitchrole', $role),
+            'groups' => []
+        ];
+        
+        // Build groups array with URLs.
         foreach ($coursegroups as $group) {
             $groupurl = new moodle_url('/local/enhancedswitchrole/switchrole.php', [
                 'id' => $courseid,
@@ -101,11 +105,13 @@ class util {
                 'returnurl' => $returnurl,
                 'sesskey' => sesskey()
             ]);
-            echo '<a class="dropdown-item" href="' . $groupurl->out(false) . '"><i class="fa-solid fa-user-group"></i> ' . format_string($group->name) . '</a>';
+            $data['groups'][] = [
+                'groupname' => format_string($group->name),
+                'groupurl' => $groupurl->out(false)
+            ];
         }
-        echo '</div>';
-        echo '</div>';
-        echo '</div>';
-        echo '</div>';
+        
+        // Render and echo the template.
+        echo $OUTPUT->render_from_template('local_enhancedswitchrole/role_with_group_dropdown', $data);
     }
 }

@@ -15,22 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Hook callbacks for local_enhancedroleswitch plugin.
+ * Hook callbacks for Enhanced Switch Role
  *
- * @package    local_enhancedroleswitch
- * @copyright  2026 Moodle
+ * @package    local_enhancedswitchrole
+ * @copyright  2026 Andrew Rowatt <A.J.Rowatt@massey.ac.nz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 $callbacks = [
-    [
-        'hook' => \core\hook\access\after_role_switched::class,
-        'callback' => \local_enhancedroleswitch\hook_listener\role_switch::class . '::after_role_switched',
-        'priority' => 0,
-    ],
-    [
+        [
         'hook' => \core\hook\after_config::class,
-        'callback' => \local_enhancedroleswitch\hook_listener\page_redirect::class . '::after_config',
+        'callback' => \local_enhancedswitchrole\hook_listener\page_redirect::class . '::after_config',
         'priority' => 0,
     ],
 ];

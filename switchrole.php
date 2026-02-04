@@ -25,20 +25,21 @@
  * to the course view page only to be redirected again.
  *
  * @since Moodle 2.0
- * @package local_enhancedroleswitch
+ * @package local_enhancedswitchrole
  * @copyright 2009 Sam Hemelryk
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once('../../config.php');
 require_once($CFG->dirroot.'/course/lib.php');
+require_once($CFG->dirroot . '/group/lib.php');
 
 $id         = required_param('id', PARAM_INT);
 $switchrole = optional_param('switchrole', -1, PARAM_INT);
 $returnurl  = optional_param('returnurl', '', PARAM_LOCALURL);
 $groupid    = optional_param('groupid', 0, PARAM_INT);
 
-$PAGE->set_url('/local/enhancedroleswitch/switchrole.php', array('id'=>$id, 'switchrole'=>$switchrole));
+$PAGE->set_url('/local/enhancedswitchrole/switchrole.php', array('id'=>$id, 'switchrole'=>$switchrole));
 
 if ($switchrole >= 0) {
     require_sesskey();
@@ -53,6 +54,20 @@ $context = context_course::instance($course->id);
 // Remove any switched roles before checking login.
 if ($switchrole == 0) {
     role_switch(0, $context);
+
+    // Switching back to normal role - remove temporary group memberships.
+    $tempmemberships = $DB->get_records('local_enhancedswitchrole_temp', [
+        'userid' => $USER->id,
+        'courseid' => $course->id
+    ]);
+
+    foreach ($tempmemberships as $membership) {
+        // Remove from group.
+        groups_remove_member($membership->groupid, $USER->id);
+        // Delete the temporary membership record.
+        $DB->delete_records('local_enhancedswitchrole_temp', ['id' => $membership->id]);
+    }
+
 }
 require_login($course);
 
@@ -65,7 +80,25 @@ if ($switchrole > 0 && has_capability('moodle/role:switchroles', $context)) {
         // Store group ID in session if provided (for group membership handling).
         // Note: sesskey is already validated above at line 42-44.
         if ($groupid > 0) {
-            $SESSION->enhancedroleswitch_groupid = $groupid;
+            // Verify the group exists and belongs to this course.
+            $group = $DB->get_record('groups', ['id' => $groupid, 'courseid' => $course->id]);
+            if ($group) {
+                // Check if user is already a member (don't want to remove a real membership later).
+                $ismember = groups_is_member($groupid, $USER->id);
+                
+                if (!$ismember) {
+                    // Add user to the group temporarily.
+                    groups_add_member($groupid, $USER->id);
+
+                    // Record this as a temporary membership.
+                    $record = new \stdClass();
+                    $record->userid = $USER->id;
+                    $record->groupid = $groupid;
+                    $record->courseid = $course->id;
+                    $record->timecreated = time();
+                    $DB->insert_record('local_enhancedswitchrole_temp', $record);
+                }
+            }
         }
         role_switch($switchrole, $context);
     }
@@ -101,11 +134,11 @@ if ($switchrole > 0 && has_capability('moodle/role:switchroles', $context)) {
     $studentroleids = array_keys($studentroles);
 
     // Get course groups.
-    require_once($CFG->dirroot . '/local/enhancedroleswitch/lib.php');
-    $coursegroups = local_enhancedroleswitch_get_course_groups($course->id);
+    require_once($CFG->dirroot . '/local/enhancedswitchrole/lib.php');
+    $coursegroups = local_enhancedswitchrole_get_course_groups($course->id);
 
     foreach ($roles as $key => $role) {
-        $url = new moodle_url('/local/enhancedroleswitch/switchrole.php', array('id' => $id, 'switchrole' => $key, 'returnurl' => $returnurl));
+        $url = new moodle_url('/local/enhancedswitchrole/switchrole.php', array('id' => $id, 'switchrole' => $key, 'returnurl' => $returnurl));
         // Button encodes special characters, apply htmlspecialchars_decode() to avoid double escaping.
         echo $OUTPUT->container($OUTPUT->single_button($url, htmlspecialchars_decode($role, ENT_COMPAT)), 'mx-3 mb-1');
         
@@ -115,11 +148,11 @@ if ($switchrole > 0 && has_capability('moodle/role:switchroles', $context)) {
             echo '<div class="mx-3 mb-3">';
             echo '<div class="dropdown">';
             echo '<button class="btn btn-secondary dropdown-toggle" type="button" id="' . s($dropdownid) . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
-            echo get_string('studentingroup', 'local_enhancedroleswitch');
+            echo get_string('studentingroup', 'local_enhancedswitchrole');
             echo '</button>';
             echo '<div class="dropdown-menu" aria-labelledby="' . s($dropdownid) . '">';
             foreach ($coursegroups as $group) {
-                $groupurl = new moodle_url('/local/enhancedroleswitch/switchrole.php', array(
+                $groupurl = new moodle_url('/local/enhancedswitchrole/switchrole.php', array(
                     'id' => $id,
                     'switchrole' => $key,
                     'groupid' => $group->id,

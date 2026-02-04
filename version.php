@@ -17,14 +17,14 @@
 /**
  * Version information for local_enhancedroleswitch plugin.
  *
- * @package    local_enhancedroleswitch
+ * @package    local_enhancedswitchrole
  * @copyright  2026 Moodle
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'local_enhancedroleswitch';
-$plugin->version   = 2026020300;
+$plugin->component = 'local_enhancedswitchrole';
+$plugin->version   = 2026020301;
 $plugin->requires  = 2023100900;
 $plugin->maturity  = MATURITY_STABLE;

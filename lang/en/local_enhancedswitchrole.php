@@ -17,14 +17,14 @@
 /**
  * Language strings for local_enhancedroleswitch plugin.
  *
- * @package    local_enhancedroleswitch
+ * @package    local_enhancedswitchrole
  * @copyright  2026 Moodle
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Enhanced Role Switch';
+$string['pluginname'] = 'Enhanced Switch Role';
 $string['studentingroup'] = 'Student in group...';
-$string['privacy:metadata:local_enhancedroleswitch_temp'] = 'Stores temporary group memberships created during role switching';
-$string['privacy:metadata:local_enhancedroleswitch_temp:userid'] = 'The user ID who switched roles';
-$string['privacy:metadata:local_enhancedroleswitch_temp:groupid'] = 'The group ID the user was temporarily added to';
-$string['privacy:metadata:local_enhancedroleswitch_temp:timecreated'] = 'When the temporary group membership was created';
+$string['privacy:metadata:local_enhancedswitchrole_temp'] = 'Stores temporary group memberships created during role switching';
+$string['privacy:metadata:local_enhancedswitchrole_temp:userid'] = 'The user ID who switched roles';
+$string['privacy:metadata:local_enhancedswitchrole_temp:groupid'] = 'The group ID the user was temporarily added to';
+$string['privacy:metadata:local_enhancedswitchrole_temp:timecreated'] = 'When the temporary group membership was created';

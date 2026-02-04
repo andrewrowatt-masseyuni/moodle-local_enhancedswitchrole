@@ -17,7 +17,7 @@
 /**
  * Library functions for local_enhancedroleswitch plugin.
  *
- * @package    local_enhancedroleswitch
+ * @package    local_enhancedswitchrole
  * @copyright  2026 Moodle
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/group/lib.php');
  * @param int $courseid Course ID
  * @return array Array of groups
  */
-function local_enhancedroleswitch_get_course_groups($courseid) {
+function local_enhancedswitchrole_get_course_groups($courseid) {
     return groups_get_all_groups($courseid);
 }
 
@@ -42,7 +42,7 @@ function local_enhancedroleswitch_get_course_groups($courseid) {
  * @param context $context Context to check
  * @return bool True if should show enhanced UI
  */
-function local_enhancedroleswitch_should_show($context) {
+function local_enhancedswitchrole_should_show($context) {
     global $CFG;
     
     // Only show in course contexts.

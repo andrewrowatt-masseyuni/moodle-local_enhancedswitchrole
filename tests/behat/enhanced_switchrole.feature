@@ -20,28 +20,27 @@ Feature: Enhanced role switching with group restrictions
       | group1 | C1     | G1       |
       | group2 | C1     | G2       |
     And the following "activities" exist:
-      | activity | name                     | intro                    | course | idnumber | section |
-      | label    | visible to group1 only   | visible to group1 only   | C1     | label1   | 1       |
-      | label    | visible to group2 only   | visible to group2 only   | C1     | label2   | 1       |
+      | activity | name                      | intro                    | course | idnumber | section |
+      | label    | visible to group 1 only   | visible to group1 only   | C1     | label1   | 1       |
+      | label    | visible to group 2 only   | visible to group2 only   | C1     | label2   | 1       |
+    And I change the window size to "large"
     And I log in as "admin"
     And I am on "course1" course homepage
-    And I navigate to "Settings" in current page administration
-    And I set the following fields to these values:
-      | Enable group mode | Separate groups |
-    And I press "Save and display"
     # Add group restriction to label1
-    And I am on the "visible to group1 only" "label activity editing" page
+    And I am on the "visible to group 1 only" "label activity editing" page
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
     And I click on "Group" "button" in the "Add restriction..." "dialogue"
     And I set the field "Group" to "group1"
+    And I click on "Displayed if student doesn't meet this condition • Click to hide" "link"
     And I press "Save and return to course"
     # Add group restriction to label2
-    And I am on the "visible to group2 only" "label activity editing" page
+    And I am on the "visible to group 2 only" "label activity editing" page
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
     And I click on "Group" "button" in the "Add restriction..." "dialogue"
     And I set the field "Group" to "group2"
+    And I click on "Displayed if student doesn't meet this condition • Click to hide" "link"
     And I press "Save and return to course"
     And I log out
     And I log in as "teacher1"
@@ -54,13 +53,21 @@ Feature: Enhanced role switching with group restrictions
     And I click on "Switch role to..." "link"
     And I click on "Student in specific group..." "button"
     And I click on "group1" "link"
+    
     # Verify role switch worked - should see Student role and group1 content only
     Then I should see "Student"
     And I should see "visible to group1 only"
     And I should not see "visible to group2 only"
+    
     # Return to normal role
     When I click on "#user-menu-toggle" "css_element"
     And I click on "Return to my normal role" "link"
+    
     # Verify both labels are visible again
     Then I should see "visible to group1 only"
     And I should see "visible to group2 only"
+
+    # Check that teacher1 is not in group1
+    Then I click on "Participants" "link"
+    And I should not see "group1"
+    And I should not see "group2"

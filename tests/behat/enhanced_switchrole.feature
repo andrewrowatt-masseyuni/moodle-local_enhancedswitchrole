@@ -4,7 +4,8 @@ Feature: Enhanced role switching with group restrictions
   As a teacher
   I need to be able to switch role to student in a specific group
 
-  Background:
+  @javascript
+  Scenario: Teacher can switch role to student in specific group and see group-restricted content
     Given the following "courses" exist:
       | fullname | shortname | category |
       | course1  | C1        | 0        |
@@ -43,10 +44,7 @@ Feature: Enhanced role switching with group restrictions
     And I set the field "Group" to "group2"
     And I press "Save and return to course"
     And I log out
-
-  @javascript
-  Scenario: Teacher can switch role to student in specific group and see group-restricted content
-    Given I log in as "teacher1"
+    And I log in as "teacher1"
     And I am on "course1" course homepage
     # Verify both labels are visible to teacher
     Then I should see "visible to group1 only"

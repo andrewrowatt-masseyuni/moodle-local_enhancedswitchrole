@@ -145,7 +145,7 @@ if ($switchrole > 0 && has_capability('moodle/role:switchroles', $context)) {
         // Show group dropdown for student roles if groups exist.
         if (!empty($coursegroups) && $key > 0 && in_array($key, $studentroleids)) {
             $dropdownid = 'groupDropdown' . clean_param($key, PARAM_INT);
-            echo '<div class="mx-3 mb-3">';
+            echo '<div class="mx-3 mb-1">';
             echo '<div class="dropdown">';
             echo '<button class="btn btn-secondary dropdown-toggle" type="button" id="' . s($dropdownid) . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
             echo get_string('studentingroup', 'local_enhancedswitchrole');

@@ -23,7 +23,7 @@
  */
 
 $string['pluginname'] = 'Enhanced Switch Role';
-$string['studentingroup'] = 'Student in group...';
+$string['studentingroup'] = 'Student in specific group...';
 $string['privacy:metadata:local_enhancedswitchrole_temp'] = 'Stores temporary group memberships created during role switching';
 $string['privacy:metadata:local_enhancedswitchrole_temp:userid'] = 'The user ID who switched roles';
 $string['privacy:metadata:local_enhancedswitchrole_temp:groupid'] = 'The group ID the user was temporarily added to';

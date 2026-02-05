@@ -207,19 +207,6 @@ class provider implements
     }
 
     /**
-     * Retrieve course contexts that hold temporary membership entries for a specific person.
-     *
-     * @param int $userid The person whose contexts we need.
-     * @return array Array of context objects.
-     */
-    private static function fetch_temp_membership_course_contexts(int $userid): array {
-        $ctxlist = self::get_contexts_for_userid($userid);
-        return array_filter($ctxlist->get_contexts(), function ($ctx) {
-            return $ctx instanceof context_course;
-        });
-    }
-
-    /**
      * Wipe all temporary membership rows that belong to a particular course.
      *
      * @param int $courseid The course whose temporary memberships should be removed.

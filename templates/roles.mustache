@@ -69,6 +69,19 @@
                     {{#str}} studentingroup, local_enhancedswitchrole, {{role}}{{/str}}
                 </button>
                 <div class="dropdown-menu" aria-labelledby="role-{{switchrole}}-group-selection">
+                    <p class="h6 dropdown-header" title="{{#str}} cohortgroupshelptext, local_enhancedswitchrole {{/str}}">{{#str}} cohortgroups, local_enhancedswitchrole {{/str}} <i class="fa fa-info-circle" aria-hidden="true"></i></p>
+                    {{^cohort_groups}}
+                    <div class="dropdown-item disabled">{{#str}} none, local_enhancedswitchrole {{/str}}</div>
+                    {{/cohort_groups}}
+                    {{#cohort_groups}}
+                    <a class="dropdown-item" href="{{url}}?id={{id}}&switchrole={{switchrole}}&returnurl={{returnurl}}&sesskey={{sesskey}}&groupid={{groupid}}"><i class="fa-solid fa-user-group"></i> {{groupname}}</a>
+                    {{/cohort_groups}}
+                    
+                    <div class="dropdown-divider"></div>
+                    <p class="h6 dropdown-header">{{#str}} coursegroups, local_enhancedswitchrole {{/str}}</p>
+                    {{^groups}}
+                    <div class="dropdown-item disabled">None</div>
+                    {{/groups}}
                     {{#groups}}
                     <a class="dropdown-item" href="{{url}}?id={{id}}&switchrole={{switchrole}}&returnurl={{returnurl}}&sesskey={{sesskey}}&groupid={{groupid}}"><i class="fa-solid fa-user-group"></i> {{groupname}}</a>
                     {{/groups}}

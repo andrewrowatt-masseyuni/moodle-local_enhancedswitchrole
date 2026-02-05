@@ -29,16 +29,6 @@ require_once($CFG->dirroot . '/group/lib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class util {
-    /**
-     * Get groups available in a course for enhanced role switching.
-     *
-     * @param int $courseid Course ID
-     * @return array Array of groups
-     */
-    public static function get_course_groups($courseid) {
-        return groups_get_all_groups($courseid);
-    }
-
     public static function remove_temporary_memberships($courseid, $userid) {
         global $DB;
 
@@ -87,17 +77,28 @@ class util {
         // Template data array.
         $data = [
             'url' => new moodle_url('/local/enhancedswitchrole/switchrole.php'),
+            'cohort_groups' => [],
+            'groups' => [],
+
         ];
 
         // Get course groups.
-        $coursegroups = util::get_course_groups($id);
+        $coursegroups = groups_get_all_groups($id);
+        $cohortgroupids = self::get_cohort_group_ids($id);
 
         // Build groups array with URLs.
         foreach ($coursegroups as $group) {
-            $data['groups'][] = [
-                'groupname' => format_string($group->name),
-                'groupid' => $group->id,
-            ];
+            if (in_array($group->id, $cohortgroupids)) {
+                $data['cohort_groups'][] = [
+                    'groupname' => format_string($group->name),
+                    'groupid' => $group->id,
+                ];
+            } else {              
+                $data['groups'][] = [
+                    'groupname' => format_string($group->name),
+                    'groupid' => $group->id,
+                ];
+            }
         }
 
         // Get student role IDs for enhanced switching.
@@ -138,4 +139,13 @@ class util {
             role_switch($roleid, $context);
         }
     }
+
+    private static function get_cohort_group_ids($courseid) {
+        global $DB;
+
+        $ids = $DB->get_field_sql('SELECT customint2 FROM {enrol} WHERE enrol= ? and courseid = ? AND customint2 != 0', ['meta', $courseid]);
+
+        return (array) $ids;
+    }
+
 }

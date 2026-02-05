@@ -6,25 +6,38 @@ Feature: Enhanced role switching with group restrictions
 
   @javascript
   Scenario: Teacher can switch role to student in specific group and see group-restricted content
-    Given the following "courses" exist:
-      | fullname | shortname | category |
-      | course1  | C1        | 0        |
+    Given I log in as "admin"
+    And the following "courses" exist:
+      | fullname          | shortname          | category |
+      | course1           | C1                 | 0        |
+      | course1_distance  | C1_distance        | 0        |
+
+     And the following "groups" exist:
+      | name   | course | idnumber |
+      | group1 | C1     | G1       |
+      | group2 | C1     | G2       |
+
+    And I navigate to "Plugins > Enrolments > Manage enrol plugins" in site administration
+    And I click on "Enable" "link" in the "Course meta link" "table_row"
+    And I add "Course meta link" enrolment method in "course1" with:
+      | Link course  | course1_distance      |
+      | Add to group | group1                |
+
     And the following "users" exist:
-      | username | firstname | lastname | email               |
+      | username | firstname | lastname | email                |
       | teacher1 | Teacher   | One      | teacher1@example.com |
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
-    And the following "groups" exist:
-      | name   | course | idnumber |
-      | group1 | C1     | G1       |
-      | group2 | C1     | G2       |
+
     And the following "activities" exist:
       | activity | name                      | intro                    | course | idnumber | section |
       | label    | visible to group 1 only   | visible to group1 only   | C1     | label1   | 1       |
       | label    | visible to group 2 only   | visible to group2 only   | C1     | label2   | 1       |
     And I change the window size to "large"
-    And I log in as "admin"
+
+    Given I log in as "teacher1"
+    
     And I am on "course1" course homepage
     # Add group restriction to label1
     And I am on the "visible to group 1 only" "label activity editing" page
@@ -48,11 +61,17 @@ Feature: Enhanced role switching with group restrictions
     # Verify both labels are visible to teacher
     Then I should see "visible to group1 only"
     And I should see "visible to group2 only"
-    
+
     # Switch role to student in group1
     When I click on "#user-menu-toggle" "css_element"
     And I click on "Switch role to..." "link"
     And I click on "Student in specific group..." "button"
+    And I should see "Cohort groups"
+    And I should see "Course groups"
+    
+    # Indirectly confirming the the course meta link group is under Cohort groups
+    And I should not see "None"
+    
     And I click on "group1" "link"
     
     # Verify role switch worked - should see Student role and group1 content only

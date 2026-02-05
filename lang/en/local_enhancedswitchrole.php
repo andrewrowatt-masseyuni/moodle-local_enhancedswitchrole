@@ -22,6 +22,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['cohortgroups'] = 'Cohort groups';
+$string['cohortgroupshelptext'] = 'Cohort in this context is a course group based on an enrolment in a linked course.';
+$string['coursegroups'] = 'Course groups';
+$string['none'] = 'None';
 $string['pluginname'] = 'Enhanced Switch Role';
 $string['studentingroup'] = '{$a} in specific group...';
 $string['privacy:metadata:local_enhancedswitchrole_temp'] = 'Stores temporary group memberships created during role switching';

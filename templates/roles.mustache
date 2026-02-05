@@ -22,6 +22,18 @@
     Example context (json):
     {
         "url": "https://example.com/local/enhancedswitchrole/switchrole.php",
+        "cohort_groups": [
+            {
+                "groupname": "Cohort Group A",
+                "groupid": 10,
+                "course": "Course 101"
+            },
+            {
+                "groupname": "Cohort Group B",
+                "groupid": 11,
+                "course": "Course 102"
+            }
+        ],
         "groups": [
             {
                 "groupname": "Group A",
@@ -74,7 +86,7 @@
                     <div class="dropdown-item disabled">{{#str}} none, local_enhancedswitchrole {{/str}}</div>
                     {{/cohort_groups}}
                     {{#cohort_groups}}
-                    <a class="dropdown-item" href="{{url}}?id={{id}}&switchrole={{switchrole}}&returnurl={{returnurl}}&sesskey={{sesskey}}&groupid={{groupid}}"><i class="fa-solid fa-users-line fa-xs" style="color: #6c757d;"></i> {{groupname}}</a>
+                    <a class="dropdown-item" href="{{url}}?id={{id}}&switchrole={{switchrole}}&returnurl={{returnurl}}&sesskey={{sesskey}}&groupid={{groupid}}">{{groupname}} <small class="text-muted">({{course}})</small></a>
                     {{/cohort_groups}}
                     
                     <div class="dropdown-divider"></div>
@@ -83,7 +95,7 @@
                     <div class="dropdown-item disabled">None</div>
                     {{/groups}}
                     {{#groups}}
-                    <a class="dropdown-item" href="{{url}}?id={{id}}&switchrole={{switchrole}}&returnurl={{returnurl}}&sesskey={{sesskey}}&groupid={{groupid}}"><i class="fa-solid fa-user-group fa-xs" style="color: #6c757d;"></i> {{groupname}}</a>
+                    <a class="dropdown-item" href="{{url}}?id={{id}}&switchrole={{switchrole}}&returnurl={{returnurl}}&sesskey={{sesskey}}&groupid={{groupid}}">{{groupname}}</a>
                     {{/groups}}
                 </div>
             </div>

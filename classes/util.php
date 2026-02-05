@@ -88,10 +88,12 @@ class util {
 
         // Build groups array with URLs.
         foreach ($coursegroups as $group) {
-            if (in_array($group->id, $cohortgroupids)) {
+            $key = array_search($group->id, array_column($cohortgroupids, 'groupid'));
+            if ($key !== false) {
                 $data['cohort_groups'][] = [
                     'groupname' => format_string($group->name),
                     'groupid' => $group->id,
+                    'course' => $cohortgroupids[$group->id]->course
                 ];
             } else {              
                 $data['groups'][] = [
@@ -143,9 +145,16 @@ class util {
     private static function get_cohort_group_ids($courseid) {
         global $DB;
 
-        $ids = $DB->get_field_sql('SELECT customint2 FROM {enrol} WHERE enrol= ? and courseid = ? AND customint2 != 0', ['meta', $courseid]);
+        $ids = $DB->get_records_sql(
+            'SELECT
+            e.customint2 as groupid,
+            c.shortname as course
+            FROM {enrol} e 
+            JOIN {course} c ON e.customint1 = c.id
+            WHERE enrol= ? and courseid = ? AND customint2 != 0',
+             ['meta', $courseid]);
 
-        return (array) $ids;
+        return $ids;
     }
 
 }

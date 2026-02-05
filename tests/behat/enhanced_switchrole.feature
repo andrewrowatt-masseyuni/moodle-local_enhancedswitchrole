@@ -68,6 +68,7 @@ Feature: Enhanced role switching with group restrictions
     And I click on "Student in specific group..." "button"
     And I should see "Cohort groups"
     And I should see "Course groups"
+    And I should see "(C1_distance)"
     
     # Indirectly confirming the the course meta link group is under Cohort groups
     And I should not see "None"

@@ -48,6 +48,7 @@ Feature: Enhanced role switching with group restrictions
     # Verify both labels are visible to teacher
     Then I should see "visible to group1 only"
     And I should see "visible to group2 only"
+    
     # Switch role to student in group1
     When I click on "#user-menu-toggle" "css_element"
     And I click on "Switch role to..." "link"

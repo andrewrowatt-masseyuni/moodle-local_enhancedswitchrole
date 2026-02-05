@@ -16,6 +16,7 @@
 
 namespace local_enhancedswitchrole;
 
+use core\exception\moodle_exception;
 use moodle_url;
 
 require_once($CFG->dirroot . '/group/lib.php');
@@ -80,38 +81,61 @@ class util {
         }
     }
 
-    public static function render_role_with_group_dropdown($rolebutton, $courseid, $role, $roleid, $returnurl):void {
+    public static function render_roles($id, $roles, $returnurl):void {
         global $OUTPUT;
-        
-        // Get course groups.
-        $coursegroups = util::get_course_groups($courseid);
 
-        $dropdownid = 'groupDropdown' . clean_param($roleid, PARAM_INT);
-        
-        // Prepare data for template.
+        // Template data array.
         $data = [
-            'rolebutton' => $rolebutton,
-            'dropdownid' => $dropdownid,
-            'dropdownlabel' => get_string('studentingroup', 'local_enhancedswitchrole', $role),
-            'groups' => []
+            'url' => new moodle_url('/local/enhancedswitchrole/switchrole.php'),
         ];
-        
+
+        // Get course groups.
+        $coursegroups = util::get_course_groups($id);
+
         // Build groups array with URLs.
         foreach ($coursegroups as $group) {
-            $groupurl = new moodle_url('/local/enhancedswitchrole/switchrole.php', [
-                'id' => $courseid,
-                'switchrole' => $roleid,
-                'groupid' => $group->id,
-                'returnurl' => $returnurl,
-                'sesskey' => sesskey()
-            ]);
             $data['groups'][] = [
                 'groupname' => format_string($group->name),
-                'groupurl' => $groupurl->out(false)
+                'groupid' => $group->id,
             ];
         }
-        
-        // Render and echo the template.
-        echo $OUTPUT->render_from_template('local_enhancedswitchrole/role_with_group_dropdown', $data);
+
+        // Get student role IDs for enhanced switching.
+        $studentroles = get_archetype_roles('student');
+        $studentroleids = array_keys($studentroles);
+
+        foreach ($roles as $key => $role) {
+            $rolebutton = [
+                'id' => $id,
+                'switchrole' => $key,
+                'returnurl' => $returnurl,
+                'role' => htmlspecialchars_decode($role, ENT_COMPAT),
+                'sesskey' => sesskey()
+            ];
+
+            // Show group dropdown for student roles if groups exist.
+            if ($key > 0 && in_array($key, $studentroleids)) {
+                $rolebutton += ['hasgroups' => true];
+            }
+
+            $data['roles'][] = $rolebutton;
+       }
+
+       echo $OUTPUT->render_from_template('local_enhancedswitchrole/roles', $data);
+    }
+
+    public static function role_switch($roleid, $context) {
+        global $USER;
+
+        if ($roleid == 0) {
+            self::remove_temporary_memberships($context->instanceid, $USER->id);
+            role_switch(0, $context);
+        } else {
+            // Handle temporary group membership if a group is specified.   
+            $groupid = optional_param('groupid', 0, PARAM_INT);
+
+            self::add_temporary_membership($context->instanceid, $USER->id, $groupid);
+            role_switch($roleid, $context);
+        }
     }
 }

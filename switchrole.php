@@ -29,15 +29,12 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_enhancedswitchrole\util;
-
 require_once('../../config.php');
 require_once($CFG->dirroot.'/course/lib.php');
 
 $id         = required_param('id', PARAM_INT);
 $switchrole = optional_param('switchrole', -1, PARAM_INT);
 $returnurl  = optional_param('returnurl', '', PARAM_LOCALURL);
-$groupid    = optional_param('groupid', 0, PARAM_INT);
 
 $PAGE->set_url('/local/enhancedswitchrole/switchrole.php', array('id'=>$id, 'switchrole'=>$switchrole));
 
@@ -53,10 +50,7 @@ $context = context_course::instance($course->id);
 
 // Remove any switched roles before checking login.
 if ($switchrole == 0) {
-    role_switch(0, $context);
-
-    // Switching back to normal role - remove temporary group memberships.
-    util::remove_temporary_memberships($course->id, $USER->id);
+    \local_enhancedswitchrole\util::role_switch(0, $context);
 }
 require_login($course);
 
@@ -66,9 +60,7 @@ if ($switchrole > 0 && has_capability('moodle/role:switchroles', $context)) {
     // inquiring minds want to know...
     $aroles = get_switchable_roles($context);
     if (is_array($aroles) && isset($aroles[$switchrole])) {
-        // Handle temporary group membership if a group is specified.
-        util::add_temporary_membership($course->id, $USER->id, $groupid);
-        role_switch($switchrole, $context);
+        \local_enhancedswitchrole\util::role_switch($switchrole, $context);
     }
 } else if ($switchrole < 0) {
 
@@ -97,23 +89,8 @@ if ($switchrole > 0 && has_capability('moodle/role:switchroles', $context)) {
     }
     echo $OUTPUT->box(markdown_to_html(get_string('switchroleto_help')));
 
-    // Get student role IDs for enhanced switching.
-    $studentroles = get_archetype_roles('student');
-    $studentroleids = array_keys($studentroles);
+    \local_enhancedswitchrole\util::render_roles($id, $roles, $returnurl);
 
-    foreach ($roles as $key => $role) {
-        // Show group dropdown for student roles if groups exist.
-        if ($key > 0 && in_array($key, $studentroleids)) {
-            $url = new moodle_url('/local/enhancedswitchrole/switchrole.php', array('id' => $id, 'switchrole' => $key, 'returnurl' => $returnurl));
-            // Button encodes special characters, apply htmlspecialchars_decode() to avoid double escaping.
-            $rolebutton = $OUTPUT->single_button($url, htmlspecialchars_decode($role, ENT_COMPAT));
-            util::render_role_with_group_dropdown($rolebutton, $id, $role, $key, $returnurl);
-        } else {
-            $url = new moodle_url('/local/enhancedswitchrole/switchrole.php', array('id' => $id, 'switchrole' => $key, 'returnurl' => $returnurl));
-            // Button encodes special characters, apply htmlspecialchars_decode() to avoid double escaping.
-            echo $OUTPUT->container($OUTPUT->single_button($url, htmlspecialchars_decode($role, ENT_COMPAT)), 'mx-3 mb-1');
-        }
-    }
 
     $url = new moodle_url($returnurl);
     echo $OUTPUT->container($OUTPUT->action_link($url, get_string('cancel')), 'mx-3 mb-1');

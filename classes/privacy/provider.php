@@ -34,10 +34,9 @@ use core_privacy\local\request\transform;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements
+    \core_privacy\local\request\core_userlist_provider,
     \core_privacy\local\metadata\provider,
-    \core_privacy\local\request\plugin\provider,
-    \core_privacy\local\request\core_userlist_provider {
-
+    \core_privacy\local\request\plugin\provider {
     /** @var string Database table holding temporary role-switch memberships. */
     const TEMP_MEMBERSHIPS_TABLE = 'local_enhancedswitchrole_temp';
 
@@ -48,7 +47,7 @@ class provider implements
      * @return collection The updated collection.
      */
     public static function get_metadata(collection $collection): collection {
-        $fieldDescriptions = [
+        $fielddescriptions = [
             'userid' => 'privacy:metadata:local_enhancedswitchrole_temp:userid',
             'groupid' => 'privacy:metadata:local_enhancedswitchrole_temp:groupid',
             'timecreated' => 'privacy:metadata:local_enhancedswitchrole_temp:timecreated',
@@ -56,7 +55,7 @@ class provider implements
 
         $collection->add_database_table(
             self::TEMP_MEMBERSHIPS_TABLE,
-            $fieldDescriptions,
+            $fielddescriptions,
             'privacy:metadata:local_enhancedswitchrole_temp'
         );
 

@@ -19,7 +19,7 @@
  * back to the page that they were on.
  *
  * This is an enhanced version that supports switching to a student role within a specific group.
- * This functionality is also supported in {@link /course/view.php} in order to comply
+ * This functionality is also supported in course/view.php in order to comply
  * with backwards compatibility.
  * The reason that we created this file was so that user didn't get redirected back
  * to the course view page only to be redirected again.
@@ -30,19 +30,20 @@
  */
 
 require_once('../../config.php');
-require_once($CFG->dirroot.'/course/lib.php');
+require_once($CFG->dirroot . '/course/lib.php');
+require_once($CFG->dirroot . '/group/lib.php');
 
 $id         = required_param('id', PARAM_INT);
 $switchrole = optional_param('switchrole', -1, PARAM_INT);
 $returnurl  = optional_param('returnurl', '', PARAM_LOCALURL);
 
-$PAGE->set_url('/local/enhancedswitchrole/switchrole.php', array('id'=>$id, 'switchrole'=>$switchrole));
+$PAGE->set_url('/local/enhancedswitchrole/switchrole.php', ['id' => $id, 'switchrole' => $switchrole]);
 
 if ($switchrole >= 0) {
     require_sesskey();
 }
 
-if (!$course = $DB->get_record('course', array('id'=>$id))) {
+if (!$course = $DB->get_record('course', ['id' => $id])) {
     redirect(new moodle_url('/'));
 }
 
@@ -63,7 +64,6 @@ if ($switchrole > 0 && has_capability('moodle/role:switchroles', $context)) {
         \local_enhancedswitchrole\util::role_switch($switchrole, $context);
     }
 } else if ($switchrole < 0) {
-
     $PAGE->set_title(get_string('switchroleto'));
     $PAGE->set_heading($course->fullname);
     $PAGE->set_pagelayout('incourse');
@@ -72,7 +72,7 @@ if ($switchrole > 0 && has_capability('moodle/role:switchroles', $context)) {
     echo $OUTPUT->heading(get_string('switchroleto'));
 
     // Overall criteria aggregation.
-    $roles = array();
+    $roles = [];
     $assumedrole = -1;
     if (is_role_switched($course->id)) {
         $roles[0] = get_string('switchrolereturn');

@@ -29,5 +29,5 @@ $callbacks = [
         'hook' => \core\hook\after_config::class,
         'callback' => \local_enhancedswitchrole\hook_listener\page_redirect::class . '::after_config',
         'priority' => 0,
-    ],
+        ],
 ];

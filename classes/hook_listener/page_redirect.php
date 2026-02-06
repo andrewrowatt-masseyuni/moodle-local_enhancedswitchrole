@@ -24,7 +24,6 @@ namespace local_enhancedswitchrole\hook_listener;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class page_redirect {
-
     /**
      * Redirect from core switchrole.php to plugin version.
      *
@@ -47,7 +46,7 @@ class page_redirect {
             $params['returnurl'] = optional_param('returnurl', '', PARAM_LOCALURL);
             $params['groupid'] = optional_param('groupid', 0, PARAM_INT);
             $params['sesskey'] = optional_param('sesskey', '', PARAM_ALPHANUM);
-            
+
             // Redirect to the plugin version with sanitized parameters.
             $newurl = new \moodle_url('/local/enhancedswitchrole/switchrole.php', $params);
             redirect($newurl);

@@ -16,10 +16,7 @@
 
 namespace local_enhancedswitchrole;
 
-use core\exception\moodle_exception;
 use moodle_url;
-
-require_once($CFG->dirroot . '/group/lib.php');
 
 /**
  * Class util
@@ -29,12 +26,22 @@ require_once($CFG->dirroot . '/group/lib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class util {
+    /**
+     * Remove all temporary group memberships for a user in a course.
+     *
+     * Removes the user from any groups they were temporarily added to
+     * and deletes the corresponding temporary membership records.
+     *
+     * @param int $courseid The ID of the course.
+     * @param int $userid The ID of the user.
+     * @return void
+     */
     public static function remove_temporary_memberships($courseid, $userid) {
         global $DB;
 
         $tempmemberships = $DB->get_records('local_enhancedswitchrole_temp', [
             'userid' => $userid,
-            'courseid' => $courseid
+            'courseid' => $courseid,
         ]);
 
         foreach ($tempmemberships as $membership) {
@@ -45,6 +52,17 @@ class util {
         }
     }
 
+    /**
+     * Add a temporary group membership for a user in a course.
+     *
+     * Adds the user to the specified group if they are not already a member,
+     * and records the membership as temporary so it can be cleaned up later.
+     *
+     * @param int $courseid The ID of the course.
+     * @param int $userid The ID of the user.
+     * @param int $groupid The ID of the group to add the user to.
+     * @return void
+     */
     public static function add_temporary_membership($courseid, $userid, $groupid) {
         global $DB;
 
@@ -54,7 +72,7 @@ class util {
             if ($group) {
                 // Check if user is already a member (don't want to remove a real membership later).
                 $ismember = groups_is_member($groupid, $userid);
-                
+
                 if (!$ismember) {
                     // Add user to the group temporarily.
                     groups_add_member($groupid, $userid);
@@ -71,7 +89,18 @@ class util {
         }
     }
 
-    public static function render_roles($id, $roles, $returnurl):void {
+    /**
+     * Render the enhanced switch role UI with available roles and groups.
+     *
+     * Outputs the roles template with role buttons and group dropdowns
+     * for student roles when groups exist in the course.
+     *
+     * @param int $id The course ID.
+     * @param array $roles An associative array of role ID => role name pairs.
+     * @param string $returnurl The URL to return to after switching role.
+     * @return void
+     */
+    public static function render_roles($id, $roles, $returnurl): void {
         global $OUTPUT;
 
         // Template data array.
@@ -84,7 +113,7 @@ class util {
 
         // Get course groups.
         $coursegroups = groups_get_all_groups($id);
-        $cohortgroupids = self::get_cohort_group_ids($id);
+        $cohortgroupids = self::get_cohort_groups($id);
 
         // Build groups array with URLs.
         foreach ($coursegroups as $group) {
@@ -93,9 +122,9 @@ class util {
                 $data['cohort_groups'][] = [
                     'groupname' => format_string($group->name),
                     'groupid' => $group->id,
-                    'course' => $cohortgroupids[$group->id]->course
+                    'course' => $cohortgroupids[$group->id]->course,
                 ];
-            } else {              
+            } else {
                 $data['groups'][] = [
                     'groupname' => format_string($group->name),
                     'groupid' => $group->id,
@@ -113,7 +142,7 @@ class util {
                 'switchrole' => $key,
                 'returnurl' => $returnurl,
                 'role' => htmlspecialchars_decode($role, ENT_COMPAT),
-                'sesskey' => sesskey()
+                'sesskey' => sesskey(),
             ];
 
             // Show group dropdown for student roles if groups exist.
@@ -122,11 +151,22 @@ class util {
             }
 
             $data['roles'][] = $rolebutton;
-       }
+        }
 
-       echo $OUTPUT->render_from_template('local_enhancedswitchrole/roles', $data);
+        echo $OUTPUT->render_from_template('local_enhancedswitchrole/roles', $data);
     }
 
+    /**
+     * Switch the current user's role in a course context.
+     *
+     * When switching to a role (roleid > 0), optionally adds the user to a
+     * temporary group. When switching back (roleid == 0), removes any
+     * temporary group memberships.
+     *
+     * @param int $roleid The role ID to switch to, or 0 to switch back.
+     * @param \context $context The course context.
+     * @return void
+     */
     public static function role_switch($roleid, $context) {
         global $USER;
 
@@ -134,7 +174,7 @@ class util {
             self::remove_temporary_memberships($context->instanceid, $USER->id);
             role_switch(0, $context);
         } else {
-            // Handle temporary group membership if a group is specified.   
+            // Handle temporary group membership if a group is specified.
             $groupid = optional_param('groupid', 0, PARAM_INT);
 
             self::add_temporary_membership($context->instanceid, $USER->id, $groupid);
@@ -142,19 +182,28 @@ class util {
         }
     }
 
-    private static function get_cohort_group_ids($courseid) {
+    /**
+     * Get the group and course associated with meta enrolment cohorts for a course.
+     *
+     * Returns an array of records keyed by group ID, each containing the
+     * group ID and the short name of the linked course.
+     *
+     * @param int $courseid The ID of the course.
+     * @return array An array of objects keyed by group ID with groupid and course properties.
+     */
+    private static function get_cohort_groups($courseid) {
         global $DB;
 
         $ids = $DB->get_records_sql(
             'SELECT
             e.customint2 as groupid,
             c.shortname as course
-            FROM {enrol} e 
+            FROM {enrol} e
             JOIN {course} c ON e.customint1 = c.id
             WHERE enrol= ? and courseid = ? AND customint2 != 0',
-             ['meta', $courseid]);
+            ['meta', $courseid]
+        );
 
         return $ids;
     }
-
 }

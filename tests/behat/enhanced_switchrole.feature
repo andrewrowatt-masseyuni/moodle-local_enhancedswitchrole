@@ -12,7 +12,7 @@ Feature: Enhanced role switching with group restrictions
       | course1           | C1                 | 0        |
       | course1_distance  | C1_distance        | 0        |
 
-     And the following "groups" exist:
+    And the following "groups" exist:
       | name   | course | idnumber |
       | group1 | C1     | G1       |
       | group2 | C1     | G2       |
@@ -37,7 +37,7 @@ Feature: Enhanced role switching with group restrictions
     And I change the window size to "large"
 
     Given I log in as "teacher1"
-    
+
     And I am on "course1" course homepage
     # Add group restriction to label1
     And I am on the "visible to group 1 only" "label activity editing" page
@@ -69,21 +69,21 @@ Feature: Enhanced role switching with group restrictions
     And I should see "Cohort groups"
     And I should see "Course groups"
     And I should see "(C1_distance)"
-    
+
     # Indirectly confirming the the course meta link group is under Cohort groups
     And I should not see "None"
-    
+
     And I click on "group1" "link"
-    
+
     # Verify role switch worked - should see Student role and group1 content only
     Then I should see "Student"
     And I should see "visible to group1 only"
     And I should not see "visible to group2 only"
-    
+
     # Return to normal role
     When I click on "#user-menu-toggle" "css_element"
     And I click on "Return to my normal role" "link"
-    
+
     # Verify both labels are visible again
     Then I should see "visible to group1 only"
     And I should see "visible to group2 only"

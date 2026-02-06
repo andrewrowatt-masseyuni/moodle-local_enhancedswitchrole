@@ -1,3 +1,4 @@
+[![Moodle Plugin CI](https://github.com/andrewrowatt-masseyuni/moodle-local_enhancedswitchrole/actions/workflows/moodle-ci.yml/badge.svg)](https://github.com/andrewrowatt-masseyuni/moodle-local_enhancedswitchrole/actions/workflows/moodle-ci.yml)
 # Enhanced Switch Role
 
 A Moodle plugin that replaces the core role switching functionality to support switching to a student role within a specific group.

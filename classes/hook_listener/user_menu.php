@@ -64,6 +64,13 @@ class user_menu {
             $currentgroupid = (int) $tempmembership->groupid;
         }
 
+        // When role-switched with a temporary group, load AMD module to display
+        // the group name in the user menu's role metadata span.
+        if (is_role_switched($course->id) && $currentgroupid > 0 && isset($groups[$currentgroupid])) {
+            $groupname = format_string($groups[$currentgroupid]->name, true, ['context' => $context]);
+            $PAGE->requires->js_call_amd('local_enhancedswitchrole/usermenu_group', 'init', [$groupname]);
+        }
+
         // Add a divider before our items.
         // Note: titleidentifier is required to prevent Snap theme's array_column()
         // from re-indexing and splicing the wrong menu item.

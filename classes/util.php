@@ -183,6 +183,62 @@ class util {
     }
 
     /**
+     * Render the group selection UI for switching temporary group membership.
+     *
+     * Outputs the groups template with cohort groups and course groups
+     * as selectable buttons.
+     *
+     * @param int $id The course ID.
+     * @param string $returnurl The URL to return to after switching group.
+     * @return void
+     */
+    public static function render_groups($id, $returnurl): void {
+        global $DB, $OUTPUT, $USER;
+
+        // Find the current temporary group membership.
+        $currentgroupid = 0;
+        $tempmembership = $DB->get_record('local_enhancedswitchrole_temp', [
+            'userid' => $USER->id,
+            'courseid' => $id,
+        ]);
+        if ($tempmembership) {
+            $currentgroupid = (int) $tempmembership->groupid;
+        }
+
+        $data = [
+            'url' => new moodle_url('/local/enhancedswitchrole/switchgroup.php'),
+            'id' => $id,
+            'returnurl' => $returnurl,
+            'sesskey' => sesskey(),
+            'cohort_groups' => [],
+            'groups' => [],
+            'noneiscurrent' => ($currentgroupid === 0),
+        ];
+
+        $coursegroups = groups_get_all_groups($id);
+        $cohortgroupids = self::get_cohort_groups($id);
+
+        foreach ($coursegroups as $group) {
+            if (isset($cohortgroupids[$group->id])) {
+                $data['cohort_groups'][] = [
+                    'groupname' => format_string($group->name),
+                    'groupid' => $group->id,
+                    'course' => $cohortgroupids[$group->id]->course,
+                    'iscurrent' => ($group->id == $currentgroupid),
+                ];
+            } else {
+                $data['groups'][] = [
+                    'groupname' => format_string($group->name),
+                    'groupid' => $group->id,
+                    'iscurrent' => ($group->id == $currentgroupid),
+                ];
+            }
+        }
+
+        echo $OUTPUT->render_from_template('local_enhancedswitchrole/groups', $data);
+    }
+
+    /**
      * Get the group and course associated with meta enrolment cohorts for a course.
      *
      * Returns an array of records keyed by group ID, each containing the
@@ -191,7 +247,7 @@ class util {
      * @param int $courseid The ID of the course.
      * @return array An array of objects keyed by group ID with groupid and course properties.
      */
-    private static function get_cohort_groups($courseid) {
+    public static function get_cohort_groups($courseid) {
         global $DB;
 
         $ids = $DB->get_records_sql(

@@ -32,3 +32,5 @@ $string['privacy:metadata:local_enhancedswitchrole_temp:groupid'] = 'The group I
 $string['privacy:metadata:local_enhancedswitchrole_temp:timecreated'] = 'When the temporary group membership was created';
 $string['privacy:metadata:local_enhancedswitchrole_temp:userid'] = 'The user ID who switched roles';
 $string['studentingroup'] = '{$a} in specific group...';
+$string['switchgroupinstudent'] = 'Switch role to student in group...';
+$string['switchtostudentingroup'] = 'Switch role to student in group \'{$a}\'';

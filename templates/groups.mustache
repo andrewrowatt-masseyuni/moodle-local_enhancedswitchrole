@@ -1,0 +1,92 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_enhancedswitchrole/groups
+
+    Displays group selection buttons for switching temporary group membership.
+
+    Example context (json):
+    {
+        "url": "https://example.com/local/enhancedswitchrole/switchgroup.php",
+        "id": 123,
+        "returnurl": "/course/view.php?id=123",
+        "sesskey": "abcd1234",
+        "noneiscurrent": false,
+        "cohort_groups": [
+            {
+                "groupname": "Cohort Group A",
+                "groupid": 10,
+                "course": "Course 101",
+                "iscurrent": true
+            }
+        ],
+        "groups": [
+            {
+                "groupname": "Group A",
+                "groupid": 1,
+                "iscurrent": false
+            }
+        ]
+    }
+}}
+<p class="h6 mx-3 mt-3" title="{{#str}} cohortgroupshelptext, local_enhancedswitchrole {{/str}}">{{#str}} cohortgroups, local_enhancedswitchrole {{/str}} <i class="fa fa-info-circle" aria-hidden="true"></i></p>
+{{^cohort_groups}}
+<div class="mx-3 mb-1 text-muted">{{#str}} none, local_enhancedswitchrole {{/str}}</div>
+{{/cohort_groups}}
+{{#cohort_groups}}
+<div class="mx-3 mb-1">
+    <div class="singlebutton">
+        <form method="post" action="{{url}}">
+            <input type="hidden" name="id" value="{{id}}">
+            <input type="hidden" name="groupid" value="{{groupid}}">
+            <input type="hidden" name="returnurl" value="{{returnurl}}">
+            <input type="hidden" name="sesskey" value="{{sesskey}}">
+            <button type="submit" class="btn btn-secondary" {{#iscurrent}}disabled{{/iscurrent}}>{{groupname}} <small class="text-muted">({{course}})</small></button>
+        </form>
+    </div>
+</div>
+{{/cohort_groups}}
+
+<p class="h6 mx-3 mt-3">{{#str}} coursegroups, local_enhancedswitchrole {{/str}}</p>
+{{^groups}}
+<div class="mx-3 mb-1 text-muted">{{#str}} none, local_enhancedswitchrole {{/str}}</div>
+{{/groups}}
+{{#groups}}
+<div class="mx-3 mb-1">
+    <div class="singlebutton">
+        <form method="post" action="{{url}}">
+            <input type="hidden" name="id" value="{{id}}">
+            <input type="hidden" name="groupid" value="{{groupid}}">
+            <input type="hidden" name="returnurl" value="{{returnurl}}">
+            <input type="hidden" name="sesskey" value="{{sesskey}}">
+            <button type="submit" class="btn btn-secondary" {{#iscurrent}}disabled{{/iscurrent}}>{{groupname}}</button>
+        </form>
+    </div>
+</div>
+{{/groups}}
+
+<div class="mx-3 mt-3 mb-1">
+    <div class="singlebutton">
+        <form method="post" action="{{url}}">
+            <input type="hidden" name="id" value="{{id}}">
+            <input type="hidden" name="groupid" value="0">
+            <input type="hidden" name="returnurl" value="{{returnurl}}">
+            <input type="hidden" name="sesskey" value="{{sesskey}}">
+            <button type="submit" class="btn btn-secondary" {{#noneiscurrent}}disabled{{/noneiscurrent}}>{{#str}} none, local_enhancedswitchrole {{/str}}</button>
+        </form>
+    </div>
+</div>

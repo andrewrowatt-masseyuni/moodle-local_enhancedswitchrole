@@ -73,7 +73,7 @@ Feature: Enhanced role switching with group restrictions
     # Indirectly confirming the the course meta link group is under Cohort groups
     And I should not see "None"
 
-    And I click on "group1" "link"
+    And I click on "group1 (C1_distance)" "link"
 
     # Verify role switch worked - should see Student role and group1 content only
     Then I should see "Student"
@@ -90,5 +90,52 @@ Feature: Enhanced role switching with group restrictions
 
     # Check that teacher1 is not in group1
     Then I click on "Participants" "link"
+    And I should not see "group1"
+    And I should not see "group2"
+
+    # Test user menu direct group switching
+    And I am on "course1" course homepage
+
+    # Verify user menu shows cohort group direct-action item and full selection link
+    When I click on "#user-menu-toggle" "css_element"
+    Then I should see "Switch role to student in group 'group1'"
+    And I should see "Switch role to student in group..."
+
+    # Click directly on cohort group to switch role + group in one step
+    When I click on "Switch role to student in group 'group1'" "link"
+
+    # Verify role switch worked - should see Student role and group1 content only
+    Then I should see "Student"
+    And I should see "visible to group1 only"
+    And I should not see "visible to group2 only"
+
+    # Verify checkmark on current group in user menu
+    When I click on "#user-menu-toggle" "css_element"
+    Then I should see "✓"
+
+    # Switch to group2 via full group selection page
+    When I click on "Switch role to student in group..." "link"
+    Then I should see "Cohort groups"
+    And I should see "Course groups"
+    And I click on "group2" "button"
+
+    # Verify group2 content is now visible
+    Then I should see "visible to group2 only"
+    And I should not see "visible to group1 only"
+
+    # Switch back to group1 directly via user menu
+    When I click on "#user-menu-toggle" "css_element"
+    And I click on "Switch role to student in group 'group1'" "link"
+    Then I should see "visible to group1 only"
+    And I should not see "visible to group2 only"
+
+    # Return to normal role
+    When I click on "#user-menu-toggle" "css_element"
+    And I click on "Return to my normal role" "link"
+
+    # Verify both labels are visible again and teacher is not in any group
+    Then I should see "visible to group1 only"
+    And I should see "visible to group2 only"
+    And I click on "Participants" "link"
     And I should not see "group1"
     And I should not see "group2"

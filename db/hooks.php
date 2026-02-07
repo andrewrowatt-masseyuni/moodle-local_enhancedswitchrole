@@ -25,9 +25,14 @@
 defined('MOODLE_INTERNAL') || die();
 
 $callbacks = [
-        [
+    [
         'hook' => \core\hook\after_config::class,
         'callback' => \local_enhancedswitchrole\hook_listener\page_redirect::class . '::after_config',
         'priority' => 0,
-        ],
+    ],
+    [
+        'hook' => \core_user\hook\extend_user_menu::class,
+        'callback' => \local_enhancedswitchrole\hook_listener\user_menu::class . '::extend_user_menu',
+        'priority' => 0,
+    ],
 ];

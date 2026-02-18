@@ -43,16 +43,18 @@ require_login($course);
 $context = context_course::instance($course->id);
 
 // When role-switched, capabilities are evaluated against the switched role,
-// so require_capability would fail. Being role-switched proves the user
-// originally had the capability.
-if (!is_role_switched($course->id)) {
-    require_capability('moodle/role:switchroles', $context);
-}
+// so require_capability would fail. This code reverts to the users actual,
+// checks the capability, and then switches back if needed.
+// The first line below is borrowed from core /course/switchrole.php.
+$assumedrole = $USER->access['rsw'][$context->path] ?? 0;
+$assumedrole && role_switch(0, $context);
+require_capability('moodle/role:switchroles', $context);
+$assumedrole && role_switch($assumedrole, $context);
 
 if ($groupid >= 0) {
     // Action mode: switch the group (and role if needed).
 
-    if (!is_role_switched($course->id)) {
+    if (!$assumedrole) {
         // Not yet switched — initiate a student role switch.
         $studentroles = get_archetype_roles('student');
         $switchableroles = get_switchable_roles($context);

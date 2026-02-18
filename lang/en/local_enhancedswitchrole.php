@@ -25,6 +25,8 @@
 $string['cohortgroups'] = 'Cohort groups';
 $string['cohortgroupshelptext'] = 'Cohort in this context is a course group based on an enrolment in a linked course.';
 $string['coursegroups'] = 'Course groups';
+$string['enabled'] = 'Enable enhanced switch role';
+$string['enabled_desc'] = 'If enabled, the enhanced switch role feature is active, allowing teachers and admins to select a specific group when switching to a student role.';
 $string['none'] = 'None';
 $string['pluginname'] = 'Enhanced Switch Role';
 $string['privacy:metadata:local_enhancedswitchrole_temp'] = 'Stores temporary group memberships created during role switching';

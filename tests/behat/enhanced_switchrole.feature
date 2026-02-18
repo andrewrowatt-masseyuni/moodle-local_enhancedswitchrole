@@ -34,7 +34,12 @@ Feature: Enhanced role switching with group restrictions
       | activity | name                      | intro                    | course | idnumber | section |
       | label    | visible to group 1 only   | visible to group1 only   | C1     | label1   | 1       |
       | label    | visible to group 2 only   | visible to group2 only   | C1     | label2   | 1       |
+
     And I change the window size to "large"
+
+    And I navigate to "Plugins > Local plugins > Enhanced Switch Role" in site administration
+    And I set the field "Enable enhanced switch role" to "1"
+    And I press "Save changes"
 
     Given I log in as "teacher1"
 

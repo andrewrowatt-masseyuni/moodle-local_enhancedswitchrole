@@ -37,6 +37,10 @@ class page_redirect {
             return;
         }
 
+        if (!get_config('local_enhancedswitchrole', 'enabled')) {
+            return;
+        }
+
         // Check if we're on the core switchrole.php page.
         if (isset($ME) && str_starts_with($ME, '/course/switchrole.php')) {
             // Build parameter array with proper sanitization.

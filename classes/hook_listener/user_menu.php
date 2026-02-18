@@ -34,6 +34,10 @@ class user_menu {
     public static function extend_user_menu(\core_user\hook\extend_user_menu $hook): void {
         global $DB, $PAGE, $USER;
 
+        if (!get_config('local_enhancedswitchrole', 'enabled')) {
+            return;
+        }
+
         $course = $PAGE->course;
         if (!$course || $course->id == SITEID) {
             return;

@@ -31,7 +31,7 @@ if ($hassiteconfig) {
         'local_enhancedswitchrole/enabled',
         get_string('enabled', 'local_enhancedswitchrole'),
         get_string('enabled_desc', 'local_enhancedswitchrole'),
-        1
+        0
     ));
 
     $ADMIN->add('localplugins', $settings);

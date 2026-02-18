@@ -20,12 +20,18 @@ Feature: Enable or disable enhanced switch role
 
   @javascript
   Scenario: Disabling the setting hides the enhanced switch role user menu items
-    Given I log in as "admin"
-    And I navigate to "Plugins > Local plugins > Enhanced Switch Role" in site administration
-    And I set the field "Enable enhanced switch role" to ""
-    And I press "Save changes"
-    And I log out
-    And I log in as "teacher1"
+    Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     When I click on "#user-menu-toggle" "css_element"
     Then I should not see "Switch role to student in group..."
+
+    Given I log in as "admin"
+    And I navigate to "Plugins > Local plugins > Enhanced Switch Role" in site administration
+    And I set the field "Enable enhanced switch role" to "1"
+    And I press "Save changes"
+    And I log out
+
+    And I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    When I click on "#user-menu-toggle" "css_element"
+    Then I should see "Switch role to student in group..."

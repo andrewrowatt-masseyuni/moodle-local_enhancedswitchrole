@@ -43,7 +43,7 @@ require_login($course);
 $context = context_course::instance($course->id);
 
 // When role-switched, capabilities are evaluated against the switched role,
-// so require_capability would fail. This code reverts to the users actual,
+// so require_capability would fail. This code reverts to the users actual role,
 // checks the capability, and then switches back if needed.
 // The first line below is borrowed from core /course/switchrole.php.
 $assumedrole = $USER->access['rsw'][$context->path] ?? 0;

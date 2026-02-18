@@ -92,11 +92,11 @@
                     <div class="dropdown-divider"></div>
                     <p class="h6 dropdown-header">{{#str}} coursegroups, local_enhancedswitchrole {{/str}}</p>
                     {{^groups}}
-                    <div class="dropdown-item disabled">None</div>
+                    <div class="dropdown-item disabled">{{#str}} none, local_enhancedswitchrole {{/str}}</div>
                     {{/groups}}
-                    {{#groups}}
+                    <div class="course_group_container">{{#groups}}
                     <a class="dropdown-item" href="{{url}}?id={{id}}&switchrole={{switchrole}}&returnurl={{returnurl}}&sesskey={{sesskey}}&groupid={{groupid}}">{{groupname}}</a>
-                    {{/groups}}
+                    {{/groups}}</div>
                 </div>
             </div>
         </div>

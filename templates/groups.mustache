@@ -25,6 +25,7 @@
         "id": 123,
         "returnurl": "/course/view.php?id=123",
         "sesskey": "abcd1234",
+        "roleid": 5,
         "noneiscurrent": false,
         "cohort_groups": [
             {
@@ -54,6 +55,7 @@
             <input type="hidden" name="id" value="{{id}}">
             <input type="hidden" name="groupid" value="{{groupid}}">
             <input type="hidden" name="returnurl" value="{{returnurl}}">
+            <input type="hidden" name="roleid" value="{{roleid}}">
             <input type="hidden" name="sesskey" value="{{sesskey}}">
             <button type="submit" class="btn btn-secondary" {{#iscurrent}}disabled{{/iscurrent}}>{{groupname}} <small class="text-muted">({{course}})</small></button>
         </form>
@@ -72,6 +74,7 @@
             <input type="hidden" name="id" value="{{id}}">
             <input type="hidden" name="groupid" value="{{groupid}}">
             <input type="hidden" name="returnurl" value="{{returnurl}}">
+            <input type="hidden" name="roleid" value="{{roleid}}">
             <input type="hidden" name="sesskey" value="{{sesskey}}">
             <button type="submit" class="btn btn-secondary" {{#iscurrent}}disabled{{/iscurrent}}>{{groupname}}</button>
         </form>
@@ -85,6 +88,7 @@
             <input type="hidden" name="id" value="{{id}}">
             <input type="hidden" name="groupid" value="0">
             <input type="hidden" name="returnurl" value="{{returnurl}}">
+            <input type="hidden" name="roleid" value="{{roleid}}">
             <input type="hidden" name="sesskey" value="{{sesskey}}">
             <button type="submit" class="btn btn-secondary" {{#noneiscurrent}}disabled{{/noneiscurrent}}>{{#str}} none, local_enhancedswitchrole {{/str}}</button>
         </form>

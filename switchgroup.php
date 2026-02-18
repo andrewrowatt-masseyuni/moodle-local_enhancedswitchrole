@@ -31,6 +31,7 @@ require_once($CFG->dirroot . '/group/lib.php');
 
 $id        = required_param('id', PARAM_INT);
 $groupid   = optional_param('groupid', -1, PARAM_INT);
+$roleid    = optional_param('roleid', 0, PARAM_INT);
 $returnurl = optional_param('returnurl', '', PARAM_LOCALURL);
 
 if ($groupid >= 0) {
@@ -56,16 +57,13 @@ if ($groupid >= 0) {
 
     if (!$assumedrole) {
         // Not yet switched — initiate a student role switch.
-        $studentroles = get_archetype_roles('student');
-        $switchableroles = get_switchable_roles($context);
+        $switchablestudents = \local_enhancedswitchrole\util::get_switchable_student_roles($context);
 
-        // Find the first student role that is switchable.
-        $studentroleid = 0;
-        foreach ($studentroles as $role) {
-            if (isset($switchableroles[$role->id])) {
-                $studentroleid = $role->id;
-                break;
-            }
+        // Use the requested role if valid, otherwise default to the lowest-ID student role.
+        if ($roleid && isset($switchablestudents[$roleid])) {
+            $studentroleid = $roleid;
+        } else {
+            $studentroleid = $switchablestudents ? array_key_first($switchablestudents) : 0;
         }
 
         if ($studentroleid) {
@@ -93,7 +91,22 @@ if ($groupid >= 0) {
     echo $OUTPUT->header();
     echo $OUTPUT->heading(get_string('switchgroupinstudent', 'local_enhancedswitchrole'));
 
-    \local_enhancedswitchrole\util::render_groups($id, $returnurl);
+    // Show a role selection dropdown if multiple student roles are switchable.
+    $switchablestudents = \local_enhancedswitchrole\util::get_switchable_student_roles($context);
+    if (!$roleid && $switchablestudents) {
+        $roleid = array_key_first($switchablestudents);
+    }
+    if (count($switchablestudents) > 1) {
+        $selecturl = new moodle_url('/local/enhancedswitchrole/switchgroup.php', [
+            'id' => $id,
+            'returnurl' => $returnurl,
+        ]);
+        $select = new \single_select($selecturl, 'roleid', $switchablestudents, $roleid, null, 'switchgroup_roleselect');
+        $select->set_label(get_string('selectrole', 'local_enhancedswitchrole'));
+        echo $OUTPUT->container($OUTPUT->render($select), 'mx-3 mb-3');
+    }
+
+    \local_enhancedswitchrole\util::render_groups($id, $returnurl, $roleid);
 
     $url = new moodle_url($returnurl);
     echo $OUTPUT->container($OUTPUT->action_link($url, get_string('cancel')), 'mx-3 mb-1');

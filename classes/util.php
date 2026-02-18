@@ -90,6 +90,32 @@ class util {
     }
 
     /**
+     * Get switchable student roles for the given context, sorted by role ID ascending.
+     *
+     * Returns the intersection of student-archetype roles and switchable roles,
+     * keyed by role ID with localised role names as values.
+     *
+     * @param \context $context The course context.
+     * @return array An associative array of role ID => localised role name.
+     */
+    public static function get_switchable_student_roles(\context $context): array {
+        $studentroles = get_archetype_roles('student');
+        $switchableroles = get_switchable_roles($context);
+
+        $result = [];
+        foreach ($studentroles as $role) {
+            if (isset($switchableroles[$role->id])) {
+                $result[$role->id] = $switchableroles[$role->id];
+            }
+        }
+
+        // Sort by role ID ascending so the built-in student role (lowest ID) is first.
+        ksort($result);
+
+        return $result;
+    }
+
+    /**
      * Render the enhanced switch role UI with available roles and groups.
      *
      * Outputs the roles template with role buttons and group dropdowns
@@ -190,9 +216,10 @@ class util {
      *
      * @param int $id The course ID.
      * @param string $returnurl The URL to return to after switching group.
+     * @param int $roleid The student role ID to switch to (passed through to group forms).
      * @return void
      */
-    public static function render_groups($id, $returnurl): void {
+    public static function render_groups($id, $returnurl, $roleid = 0): void {
         global $DB, $OUTPUT, $USER;
 
         // Find the current temporary group membership.
@@ -210,6 +237,7 @@ class util {
             'id' => $id,
             'returnurl' => $returnurl,
             'sesskey' => sesskey(),
+            'roleid' => $roleid,
             'cohort_groups' => [],
             'groups' => [],
             'noneiscurrent' => ($currentgroupid === 0),

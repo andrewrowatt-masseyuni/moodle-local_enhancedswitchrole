@@ -145,7 +145,7 @@ class util {
                 'sesskey' => sesskey(),
             ];
 
-            // Show group dropdown for student roles if groups exist.
+            // Show group dropdown for student roles only.
             if ($key > 0 && in_array($key, $studentroleids)) {
                 $rolebutton += ['hasgroups' => true];
             }

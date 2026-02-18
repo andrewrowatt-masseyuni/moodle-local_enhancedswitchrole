@@ -26,6 +26,8 @@ use core_privacy\local\request\userlist;
 use core_privacy\local\request\writer;
 use core_privacy\local\request\transform;
 
+// phpcs:disable Universal.OOStructures.AlphabeticExtendsImplements
+
 /**
  * Privacy Subsystem implementation for the Enhanced Switch Role plugin.
  *
@@ -34,8 +36,8 @@ use core_privacy\local\request\transform;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements
-    \core_privacy\local\request\core_userlist_provider,
     \core_privacy\local\metadata\provider,
+    \core_privacy\local\request\core_userlist_provider,
     \core_privacy\local\request\plugin\provider {
     /** @var string Database table holding temporary role-switch memberships. */
     const TEMP_MEMBERSHIPS_TABLE = 'local_enhancedswitchrole_temp';

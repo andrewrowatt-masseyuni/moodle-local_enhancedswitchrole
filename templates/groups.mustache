@@ -17,7 +17,7 @@
 {{!
     @template local_enhancedswitchrole/groups
 
-    Displays group selection buttons for switching temporary group membership.
+    Displays a form with role and group selection for switching temporary group membership.
 
     Example context (json):
     {
@@ -26,6 +26,20 @@
         "returnurl": "/course/view.php?id=123",
         "sesskey": "abcd1234",
         "roleid": 5,
+        "hasmultipleroles": true,
+        "studentrolename": "Student",
+        "roles": [
+            {
+                "roleid": 5,
+                "rolename": "Student",
+                "isselected": true
+            },
+            {
+                "roleid": 9,
+                "rolename": "Student with hidden course access",
+                "isselected": false
+            }
+        ],
         "noneiscurrent": false,
         "cohort_groups": [
             {
@@ -44,53 +58,48 @@
         ]
     }
 }}
-<p class="h6 mx-3 mt-3" title="{{#str}} cohortgroupshelptext, local_enhancedswitchrole {{/str}}">{{#str}} cohortgroups, local_enhancedswitchrole {{/str}} <i class="fa fa-info-circle" aria-hidden="true"></i></p>
-{{^cohort_groups}}
-<div class="mx-3 mb-1 text-muted">{{#str}} none, local_enhancedswitchrole {{/str}}</div>
-{{/cohort_groups}}
-{{#cohort_groups}}
-<div class="mx-3 mb-1">
-    <div class="singlebutton">
-        <form method="post" action="{{url}}">
-            <input type="hidden" name="id" value="{{id}}">
-            <input type="hidden" name="groupid" value="{{groupid}}">
-            <input type="hidden" name="returnurl" value="{{returnurl}}">
+<form method="post" action="{{url}}" class="">
+    <input type="hidden" name="id" value="{{id}}">
+    <input type="hidden" name="returnurl" value="{{returnurl}}">
+    <input type="hidden" name="sesskey" value="{{sesskey}}">
+    <div class="form-row">
+        <div class="form-group col-auto">
+            <label for="switchgroup-roleid">{{#str}} selectrole, local_enhancedswitchrole {{/str}}</label>
+            {{#hasmultipleroles}}
+            <select name="roleid" id="switchgroup-roleid" class="form-control">
+                {{#roles}}
+                <option value="{{roleid}}" {{#isselected}}selected{{/isselected}}>{{rolename}}</option>
+                {{/roles}}
+            </select>
+            {{/hasmultipleroles}}
+            {{^hasmultipleroles}}
+            <input type="text" class="form-control" id="switchgroup-roleid" value="{{studentrolename}}" readonly>
             <input type="hidden" name="roleid" value="{{roleid}}">
-            <input type="hidden" name="sesskey" value="{{sesskey}}">
-            <button type="submit" class="btn btn-secondary" {{#iscurrent}}disabled{{/iscurrent}}>{{groupname}} <small class="text-muted">({{course}})</small></button>
-        </form>
+            {{/hasmultipleroles}}
+        </div>
+        <div class="form-group col-auto">
+            <label for="switchgroup-groupid">{{#str}} selectgroup, local_enhancedswitchrole {{/str}}</label>
+            <select name="groupid" id="switchgroup-groupid" class="form-control mr-2 mb-2">
+                <option value="0" {{#noneiscurrent}}selected{{/noneiscurrent}}>{{#str}} none, local_enhancedswitchrole {{/str}}</option>
+                <optgroup label="{{#str}} cohortgroups, local_enhancedswitchrole {{/str}}">
+                    {{#cohort_groups}}
+                    <option value="{{groupid}}" {{#iscurrent}}selected{{/iscurrent}}>{{groupname}} ({{course}})</option>
+                    {{/cohort_groups}}
+                    {{^cohort_groups}}
+                    <option disabled>{{#str}} none, local_enhancedswitchrole {{/str}}</option>
+                    {{/cohort_groups}}
+                </optgroup>
+                <optgroup label="{{#str}} coursegroups, local_enhancedswitchrole {{/str}}">
+                    {{#groups}}
+                    <option value="{{groupid}}" {{#iscurrent}}selected{{/iscurrent}}>{{groupname}}</option>
+                    {{/groups}}
+                    {{^groups}}
+                    <option disabled>{{#str}} none, local_enhancedswitchrole {{/str}}</option>
+                    {{/groups}}
+                </optgroup>
+            </select>
+        </div>    
     </div>
-</div>
-{{/cohort_groups}}
-
-<p class="h6 mx-3 mt-3">{{#str}} coursegroups, local_enhancedswitchrole {{/str}}</p>
-{{^groups}}
-<div class="mx-3 mb-1 text-muted">{{#str}} none, local_enhancedswitchrole {{/str}}</div>
-{{/groups}}
-{{#groups}}
-<div class="mx-3 mb-1">
-    <div class="singlebutton">
-        <form method="post" action="{{url}}">
-            <input type="hidden" name="id" value="{{id}}">
-            <input type="hidden" name="groupid" value="{{groupid}}">
-            <input type="hidden" name="returnurl" value="{{returnurl}}">
-            <input type="hidden" name="roleid" value="{{roleid}}">
-            <input type="hidden" name="sesskey" value="{{sesskey}}">
-            <button type="submit" class="btn btn-secondary" {{#iscurrent}}disabled{{/iscurrent}}>{{groupname}}</button>
-        </form>
-    </div>
-</div>
-{{/groups}}
-
-<div class="mx-3 mt-3 mb-1">
-    <div class="singlebutton">
-        <form method="post" action="{{url}}">
-            <input type="hidden" name="id" value="{{id}}">
-            <input type="hidden" name="groupid" value="0">
-            <input type="hidden" name="returnurl" value="{{returnurl}}">
-            <input type="hidden" name="roleid" value="{{roleid}}">
-            <input type="hidden" name="sesskey" value="{{sesskey}}">
-            <button type="submit" class="btn btn-secondary" {{#noneiscurrent}}disabled{{/noneiscurrent}}>{{#str}} none, local_enhancedswitchrole {{/str}}</button>
-        </form>
-    </div>
-</div>
+    
+    <button type="submit" class="btn btn-secondary mb-2">{{#str}} switchrole, local_enhancedswitchrole {{/str}}</button>
+</form>

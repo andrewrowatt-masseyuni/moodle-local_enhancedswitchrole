@@ -100,7 +100,7 @@ class util {
      */
     public static function get_switchable_student_roles(\context $context): array {
         $studentroles = get_archetype_roles('student');
-        $switchableroles = get_switchable_roles($context);
+        $switchableroles = get_switchable_roles($context, ROLENAME_BOTH);
 
         $result = [];
         foreach ($studentroles as $role) {
@@ -211,15 +211,15 @@ class util {
     /**
      * Render the group selection UI for switching temporary group membership.
      *
-     * Outputs the groups template with cohort groups and course groups
-     * as selectable buttons.
+     * Outputs the groups template with role and group selection dropdowns.
      *
      * @param int $id The course ID.
      * @param string $returnurl The URL to return to after switching group.
-     * @param int $roleid The student role ID to switch to (passed through to group forms).
+     * @param int $roleid The selected student role ID.
+     * @param array $roles Switchable student roles (roleid => localised name). If more than one, a role dropdown is shown.
      * @return void
      */
-    public static function render_groups($id, $returnurl, $roleid = 0): void {
+    public static function render_groups($id, $returnurl, $roleid = 0, $roles = []): void {
         global $DB, $OUTPUT, $USER;
 
         // Find the current temporary group membership.
@@ -232,12 +232,26 @@ class util {
             $currentgroupid = (int) $tempmembership->groupid;
         }
 
+        // Build roles array for template.
+        $rolesdata = [];
+        foreach ($roles as $rid => $rname) {
+            $rolesdata[] = [
+                'roleid' => $rid,
+                'rolename' => $rname,
+                'isselected' => ($rid == $roleid),
+            ];
+        }
+
         $data = [
             'url' => new moodle_url('/local/enhancedswitchrole/switchgroup.php'),
             'id' => $id,
             'returnurl' => $returnurl,
             'sesskey' => sesskey(),
             'roleid' => $roleid,
+            'hasmultipleroles' => count($roles) > 1,
+            'studentrolename' => $roles[array_key_first($roles)] ?? get_string('defaultcoursestudent'),
+            'selectedrolename' => $roles[$roleid] ?? '',
+            'roles' => $rolesdata,
             'cohort_groups' => [],
             'groups' => [],
             'noneiscurrent' => ($currentgroupid === 0),

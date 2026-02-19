@@ -91,22 +91,13 @@ if ($groupid >= 0) {
     echo $OUTPUT->header();
     echo $OUTPUT->heading(get_string('switchgroupinstudent', 'local_enhancedswitchrole'));
 
-    // Show a role selection dropdown if multiple student roles are switchable.
+    // Get switchable student roles for the role dropdown.
     $switchablestudents = \local_enhancedswitchrole\util::get_switchable_student_roles($context);
     if (!$roleid && $switchablestudents) {
         $roleid = array_key_first($switchablestudents);
     }
-    if (count($switchablestudents) > 1) {
-        $selecturl = new moodle_url('/local/enhancedswitchrole/switchgroup.php', [
-            'id' => $id,
-            'returnurl' => $returnurl,
-        ]);
-        $select = new \single_select($selecturl, 'roleid', $switchablestudents, $roleid, null, 'switchgroup_roleselect');
-        $select->set_label(get_string('selectrole', 'local_enhancedswitchrole'));
-        echo $OUTPUT->container($OUTPUT->render($select), 'mx-3 mb-3');
-    }
 
-    \local_enhancedswitchrole\util::render_groups($id, $returnurl, $roleid);
+    \local_enhancedswitchrole\util::render_groups($id, $returnurl, $roleid, $switchablestudents);
 
     $url = new moodle_url($returnurl);
     echo $OUTPUT->container($OUTPUT->action_link($url, get_string('cancel')), 'mx-3 mb-1');

@@ -67,7 +67,7 @@ Feature: Enhanced role switching with group restrictions
     Then I should see "visible to group1 only"
     And I should see "visible to group2 only"
 
-    # Switch role to student in group1
+    # Switch role to student in group1 via the roles page dropdown
     When I click on "#user-menu-toggle" "css_element"
     And I click on "Switch role to..." "link"
     And I click on "Student in specific group..." "button"
@@ -120,11 +120,10 @@ Feature: Enhanced role switching with group restrictions
     When I click on "#user-menu-toggle" "css_element"
     Then I should see "✓"
 
-    # Switch to group2 via full group selection page
+    # Switch to group2 via full group selection page form
     When I click on "Switch role to student in group..." "link"
-    Then I should see "Cohort groups"
-    And I should see "Course groups"
-    And I click on "group2" "button"
+    And I set the field "Group" to "group2"
+    And I press "Switch role"
 
     # Verify group2 content is now visible
     Then I should see "in group 'group2'" in the ".usermenu .meta.role" "css_element"

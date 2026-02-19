@@ -25,12 +25,12 @@ Feature: Student role selection on switchgroup page
 
   @javascript
   Scenario: Role dropdown appears only when multiple student roles exist
-    # With only one student role, the dropdown should not appear.
+    # With only one student role, the role select should not appear.
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     When I click on "#user-menu-toggle" "css_element"
     And I click on "Switch role to student in group..." "link"
-    Then I should not see "Student role"
+    Then "Student role" "select" should not exist
 
     # Create a second student-archetype role and allow editing teachers to switch to it.
     Given I log in as "admin"
@@ -45,17 +45,18 @@ Feature: Student role selection on switchgroup page
     And I click on "Allow users with role Teacher to switch roles to the role Student with hidden course access" "checkbox"
     And I press "Save changes"
 
-    # With two student roles, the dropdown should appear with correct defaults.
+    # With two student roles, the select should appear with correct defaults.
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     When I click on "#user-menu-toggle" "css_element"
     And I click on "Switch role to student in group..." "link"
-    Then I should see "Student role"
+    Then "Student role" "select" should exist
     And the field "Student role" matches value "Student"
     And the "Student role" select box should contain "Student with hidden course access"
 
     # Switch to group using the default "Student" role.
-    When I click on "Group1" "button"
+    When I set the field "Group" to "Group1"
+    And I press "Switch role"
     Then I should see "Student" in the ".usermenu .meta.role" "css_element"
 
     # Return to normal role and switch using "Student with hidden course access".
@@ -64,5 +65,6 @@ Feature: Student role selection on switchgroup page
     And I click on "#user-menu-toggle" "css_element"
     And I click on "Switch role to student in group..." "link"
     And I set the field "Student role" to "Student with hidden course access"
-    And I click on "Group2" "button"
+    And I set the field "Group" to "Group2"
+    And I press "Switch role"
     Then I should see "Student with hidden course access" in the ".usermenu .meta.role" "css_element"

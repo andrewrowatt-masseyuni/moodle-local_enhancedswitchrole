@@ -90,6 +90,32 @@ class util {
     }
 
     /**
+     * Get switchable student roles for the given context, sorted by role ID ascending.
+     *
+     * Returns the intersection of student-archetype roles and switchable roles,
+     * keyed by role ID with localised role names as values.
+     *
+     * @param \context $context The course context.
+     * @return array An associative array of role ID => localised role name.
+     */
+    public static function get_switchable_student_roles(\context $context): array {
+        $studentroles = get_archetype_roles('student');
+        $switchableroles = get_switchable_roles($context, ROLENAME_BOTH);
+
+        $result = [];
+        foreach ($studentroles as $role) {
+            if (isset($switchableroles[$role->id])) {
+                $result[$role->id] = $switchableroles[$role->id];
+            }
+        }
+
+        // Sort by role ID ascending so the built-in student role (lowest ID) is first.
+        ksort($result);
+
+        return $result;
+    }
+
+    /**
      * Render the enhanced switch role UI with available roles and groups.
      *
      * Outputs the roles template with role buttons and group dropdowns
@@ -185,14 +211,15 @@ class util {
     /**
      * Render the group selection UI for switching temporary group membership.
      *
-     * Outputs the groups template with cohort groups and course groups
-     * as selectable buttons.
+     * Outputs the groups template with role and group selection dropdowns.
      *
      * @param int $id The course ID.
      * @param string $returnurl The URL to return to after switching group.
+     * @param int $roleid The selected student role ID.
+     * @param array $roles Switchable student roles (roleid => localised name). If more than one, a role dropdown is shown.
      * @return void
      */
-    public static function render_groups($id, $returnurl): void {
+    public static function render_groups($id, $returnurl, $roleid = 0, $roles = []): void {
         global $DB, $OUTPUT, $USER;
 
         // Find the current temporary group membership.
@@ -205,11 +232,26 @@ class util {
             $currentgroupid = (int) $tempmembership->groupid;
         }
 
+        // Build roles array for template.
+        $rolesdata = [];
+        foreach ($roles as $rid => $rname) {
+            $rolesdata[] = [
+                'roleid' => $rid,
+                'rolename' => $rname,
+                'isselected' => ($rid == $roleid),
+            ];
+        }
+
         $data = [
             'url' => new moodle_url('/local/enhancedswitchrole/switchgroup.php'),
             'id' => $id,
             'returnurl' => $returnurl,
             'sesskey' => sesskey(),
+            'roleid' => $roleid,
+            'hasmultipleroles' => count($roles) > 1,
+            'studentrolename' => $roles[array_key_first($roles)] ?? get_string('defaultcoursestudent'),
+            'selectedrolename' => $roles[$roleid] ?? '',
+            'roles' => $rolesdata,
             'cohort_groups' => [],
             'groups' => [],
             'noneiscurrent' => ($currentgroupid === 0),

@@ -1,4 +1,4 @@
-#page-local-enhancedswitchrole-switchrole {
+:is(#page-local-enhancedswitchrole-switchrole, #page-local-enhancedswitchrole-switchgroup) {
     .course_group_container {
         max-height: calc(10 * 37px); /* Show max 10 groups, each row is 37px high including borders */
         overflow: hidden auto;

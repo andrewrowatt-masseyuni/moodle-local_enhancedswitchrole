@@ -58,6 +58,12 @@ class util {
      * Adds the user to the specified group if they are not already a member,
      * and records the membership as temporary so it can be cleaned up later.
      *
+     * For enrolled users the standard groups_add_member() API is used.
+     * For non-enrolled users (e.g. site admins, category-level managers)
+     * groups_add_member() silently returns false because it requires an
+     * enrolment record (see group/lib.php). In that case we write directly
+     * to mdl_groups_members via {@see self::insert_group_member_direct()}.
+     *
      * @param int $courseid The ID of the course.
      * @param int $userid The ID of the user.
      * @param int $groupid The ID of the group to add the user to.
@@ -74,10 +80,19 @@ class util {
                 $ismember = groups_is_member($groupid, $userid);
 
                 if (!$ismember) {
-                    // Add user to the group temporarily.
-                    groups_add_member($groupid, $userid);
+                    $context = \context_course::instance($courseid);
 
-                    // Record this as a temporary membership.
+                    if (is_enrolled($context, $userid)) {
+                        // Normal path: user is enrolled, use the Moodle API.
+                        groups_add_member($groupid, $userid);
+                    } else {
+                        // Non-enrolled path (e.g. site admin, category-level manager).
+                        // groups_add_member() rejects non-enrolled users; bypass by writing
+                        // directly and replicating the API's post-insert steps.
+                        self::insert_group_member_direct($group, $userid, $context);
+                    }
+
+                    // Record this as a temporary membership so it can be cleaned up on role-switch-back.
                     $record = new \stdClass();
                     $record->userid = $userid;
                     $record->groupid = $groupid;
@@ -87,6 +102,64 @@ class util {
                 }
             }
         }
+    }
+
+    /**
+     * Insert a group membership record directly, bypassing the enrolment guard
+     * in groups_add_member(), and replicate the API's post-insert steps.
+     *
+     * Used only for non-enrolled users (e.g. site admins, category-level managers)
+     * who need temporary group membership during a role-switch session.
+     *
+     * Limitations:
+     *  - This is a direct write to mdl_groups_members that bypasses the Moodle
+     *    groups API contract. If the schema of that table changes this code will
+     *    need updating.
+     *  - It is only intended to support basic checking of activity or resource restrictions
+     *    based on group membership during role-switched sessions.
+     *    It does not attempt to replicate all side effects of groups_add_member().
+     *
+     * @param \stdClass $group The group record from mdl_groups.
+     * @param int $userid The user ID to add.
+     * @param \context $context The course context.
+     * @return void
+     */
+    private static function insert_group_member_direct(\stdClass $group, int $userid, \context $context): void {
+        global $DB;
+
+        $member = new \stdClass();
+        $member->groupid   = $group->id;
+        $member->userid    = $userid;
+        $member->timeadded = time();
+        $member->component = '';
+        $member->itemid    = 0;
+
+        $DB->insert_record('groups_members', $member);
+
+        // Keep group.timemodified consistent with what groups_add_member() does.
+        $DB->set_field('groups', 'timemodified', $member->timeadded, ['id' => $group->id]);
+        $group->timemodified = $member->timeadded;
+
+        // Invalidate the per-user group/grouping cache so the new membership is visible immediately.
+        \cache_helper::invalidate_by_definition('core', 'user_group_groupings', [], [$userid]);
+
+        // Fire the standard event so other plugins/observers are notified.
+        $params = [
+            'context'       => $context,
+            'objectid'      => $group->id,
+            'relateduserid' => $userid,
+            'other'         => ['component' => '', 'itemid' => 0],
+        ];
+        $event = \core\event\group_member_added::create($params);
+        $event->add_record_snapshot('groups', $group);
+        $event->trigger();
+
+        // Dispatch the hook (mirrors groups_add_member() behaviour).
+        $hook = new \core_group\hook\after_group_membership_added(
+            groupinstance: $group,
+            userids: [$userid],
+        );
+        \core\di::get(\core\hook\manager::class)->dispatch($hook);
     }
 
     /**

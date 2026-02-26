@@ -25,6 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_enhancedswitchrole';
-$plugin->version   = 2026020301;
+$plugin->release   = '1.1.0';
+$plugin->version   = 2026022701;
 $plugin->requires  = 2023100900;
 $plugin->maturity  = MATURITY_STABLE;

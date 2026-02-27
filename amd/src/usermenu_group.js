@@ -22,7 +22,6 @@
  */
 
 import {getString} from 'core/str';
-
 /**
  * Initialise the user menu group name display.
  *
@@ -36,10 +35,18 @@ export const init = async(groupName) => {
     if (!roleSpan || !groupName) {
         return;
     }
-    const roleName = roleSpan.textContent;
-    const text = await getString('switchedroleandgroup', 'local_enhancedswitchrole', {
+
+    const roleName = roleSpan.textContent.trim();
+    const titletext = await getString('switchedroleandgroup', 'local_enhancedswitchrole', {
         role: roleName,
         group: groupName,
     });
-    roleSpan.textContent = text;
+
+    roleSpan.style.flexDirection = 'column';
+    const groupSpan = document.createElement('span');
+    groupSpan.title = titletext;
+    groupSpan.classList.add('meta', 'local_enhancedswitchrole_group');
+    groupSpan.dataset.group = groupName;
+    groupSpan.innerHTML = `<i class="fa fa-users fa-fw fa-2xs" aria-hidden="true"></i> ${groupName}`;
+    roleSpan.appendChild(groupSpan);
 };

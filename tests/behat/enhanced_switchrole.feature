@@ -97,7 +97,7 @@ Feature: Enhanced role switching with group restrictions
 
     # Verify role switch worked - should see Student role and group1 content only
     Then I should see "Student"
-    And I should see "in group 'group1'" in the ".usermenu .meta.role" "css_element"
+    And the "data-group" attribute of ".usermenu .local_enhancedswitchrole_group" "css_element" should contain "group1"
     And I should see "visible to group1 only"
     And I should not see "visible to group2 only"
 
@@ -127,7 +127,7 @@ Feature: Enhanced role switching with group restrictions
 
     # Verify role switch worked - should see Student role and group1 content only
     Then I should see "Student"
-    And I should see "in group 'group1'" in the ".usermenu .meta.role" "css_element"
+    And the "data-group" attribute of ".usermenu .local_enhancedswitchrole_group" "css_element" should contain "group1"
     And I should see "visible to group1 only"
     And I should not see "visible to group2 only"
 
@@ -141,14 +141,14 @@ Feature: Enhanced role switching with group restrictions
     And I press "Switch role"
 
     # Verify group2 content is now visible
-    Then I should see "in group 'group2'" in the ".usermenu .meta.role" "css_element"
+    Then the "data-group" attribute of ".usermenu .local_enhancedswitchrole_group" "css_element" should contain "group2"
     And I should see "visible to group2 only"
     And I should not see "visible to group1 only"
 
     # Switch back to group1 directly via user menu
     When I click on "#user-menu-toggle" "css_element"
     And I click on "Switch role to student in group 'group1'" "link"
-    Then I should see "group1" in the ".usermenu .meta.role" "css_element"
+    Then the "data-group" attribute of ".usermenu .local_enhancedswitchrole_group" "css_element" should contain "group1"
     And I should see "visible to group1 only"
     And I should not see "visible to group2 only"
 
@@ -187,7 +187,7 @@ Feature: Enhanced role switching with group restrictions
 
     # Verify role switch worked - should see Student role and group1 content only
     Then I should see "Student"
-    And I should see "in group 'group1'" in the ".usermenu .meta.role" "css_element"
+    And the "data-group" attribute of ".usermenu .local_enhancedswitchrole_group" "css_element" should contain "group1"
     And I should see "visible to group1 only"
     And I should not see "visible to group2 only"
 
@@ -217,7 +217,7 @@ Feature: Enhanced role switching with group restrictions
 
     # Verify role switch worked - should see Student role and group1 content only
     Then I should see "Student"
-    And I should see "in group 'group1'" in the ".usermenu .meta.role" "css_element"
+    And the "data-group" attribute of ".usermenu .local_enhancedswitchrole_group" "css_element" should contain "group1"
     And I should see "visible to group1 only"
     And I should not see "visible to group2 only"
 
@@ -231,14 +231,14 @@ Feature: Enhanced role switching with group restrictions
     And I press "Switch role"
 
     # Verify group2 content is now visible
-    Then I should see "in group 'group2'" in the ".usermenu .meta.role" "css_element"
+    Then the "data-group" attribute of ".usermenu .local_enhancedswitchrole_group" "css_element" should contain "group2"
     And I should see "visible to group2 only"
     And I should not see "visible to group1 only"
 
     # Switch back to group1 directly via user menu
     When I click on "#user-menu-toggle" "css_element"
     And I click on "Switch role to student in group 'group1'" "link"
-    Then I should see "group1" in the ".usermenu .meta.role" "css_element"
+    Then the "data-group" attribute of ".usermenu .local_enhancedswitchrole_group" "css_element" should contain "group1"
     And I should see "visible to group1 only"
     And I should not see "visible to group2 only"
 
@@ -277,7 +277,7 @@ Feature: Enhanced role switching with group restrictions
 
     # Verify role switch worked - should see Student role and group1 content only
     Then I should see "Student"
-    And I should see "in group 'group1'" in the ".usermenu .meta.role" "css_element"
+    And the "data-group" attribute of ".usermenu .local_enhancedswitchrole_group" "css_element" should contain "group1"
     And I should see "visible to group1 only"
     And I should not see "visible to group2 only"
 
@@ -307,7 +307,7 @@ Feature: Enhanced role switching with group restrictions
 
     # Verify role switch worked - should see Student role and group1 content only
     Then I should see "Student"
-    And I should see "in group 'group1'" in the ".usermenu .meta.role" "css_element"
+    And the "data-group" attribute of ".usermenu .local_enhancedswitchrole_group" "css_element" should contain "group1"
     And I should see "visible to group1 only"
     And I should not see "visible to group2 only"
 
@@ -321,14 +321,14 @@ Feature: Enhanced role switching with group restrictions
     And I press "Switch role"
 
     # Verify group2 content is now visible
-    Then I should see "in group 'group2'" in the ".usermenu .meta.role" "css_element"
+    Then the "data-group" attribute of ".usermenu .local_enhancedswitchrole_group" "css_element" should contain "group2"
     And I should see "visible to group2 only"
     And I should not see "visible to group1 only"
 
     # Switch back to group1 directly via user menu
     When I click on "#user-menu-toggle" "css_element"
     And I click on "Switch role to student in group 'group1'" "link"
-    Then I should see "group1" in the ".usermenu .meta.role" "css_element"
+    Then the "data-group" attribute of ".usermenu .local_enhancedswitchrole_group" "css_element" should contain "group1"
     And I should see "visible to group1 only"
     And I should not see "visible to group2 only"
 
@@ -367,7 +367,7 @@ Feature: Enhanced role switching with group restrictions
 
     # Verify role switch worked - should see Student role and group1 content only
     Then I should see "Student"
-    And I should see "in group 'group1'" in the ".usermenu .meta.role" "css_element"
+    And the "data-group" attribute of ".usermenu .local_enhancedswitchrole_group" "css_element" should contain "group1"
     And I should see "visible to group1 only"
     And I should not see "visible to group2 only"
 
@@ -397,7 +397,7 @@ Feature: Enhanced role switching with group restrictions
 
     # Verify role switch worked - should see Student role and group1 content only
     Then I should see "Student"
-    And I should see "in group 'group1'" in the ".usermenu .meta.role" "css_element"
+    And the "data-group" attribute of ".usermenu .local_enhancedswitchrole_group" "css_element" should contain "group1"
     And I should see "visible to group1 only"
     And I should not see "visible to group2 only"
 
@@ -411,14 +411,14 @@ Feature: Enhanced role switching with group restrictions
     And I press "Switch role"
 
     # Verify group2 content is now visible
-    Then I should see "in group 'group2'" in the ".usermenu .meta.role" "css_element"
+    Then the "data-group" attribute of ".usermenu .local_enhancedswitchrole_group" "css_element" should contain "group2"
     And I should see "visible to group2 only"
     And I should not see "visible to group1 only"
 
     # Switch back to group1 directly via user menu
     When I click on "#user-menu-toggle" "css_element"
     And I click on "Switch role to student in group 'group1'" "link"
-    Then I should see "group1" in the ".usermenu .meta.role" "css_element"
+    Then the "data-group" attribute of ".usermenu .local_enhancedswitchrole_group" "css_element" should contain "group1"
     And I should see "visible to group1 only"
     And I should not see "visible to group2 only"
 
